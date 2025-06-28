@@ -29,6 +29,7 @@
 \RequirePackage{tabularx}
 \RequirePackage{fmtcount}
 \RequirePackage{xcolor}
+\RequirePackage{tikz}
 
 % Commands and settings -------------------------------------------------------
 % Handle mutually exclusive options
@@ -115,3 +116,35 @@
 \NewDocumentCommand{\dialogue}{ m o m }{\letteringitem{#1}[#2]{#3}}
 \NewDocumentCommand{\narration}{ o m }{\letteringitem{NARRATION}[#1]{#2}}
 \NewDocumentCommand{\sfx}{ m }{\letteringitem{SFX}{#1}}
+
+% Cell size and spacing (in inches)
+\newcommand{\cellwidth}{3}
+\newcommand{\cellheight}{2.5}
+\newcommand{\cellxspacing}{0.25}
+\newcommand{\cellyspacing}{0.25}
+\newcommand{\startx}{0}
+\newcommand{\starty}{8}
+
+% Macro: \boxpanel{line}{column}{width}{height}{content}
+\newcommand{\boxpanel}[5]{
+    % Total size includes internal spacing
+    \pgfmathsetmacro{\boxheight}{#4 * \cellheight + (#4 - 1) * \cellyspacing}
+    \pgfmathsetmacro{\boxwidth}{#3 * \cellwidth + (#3 - 1) * \cellxspacing}
+
+    % Position: x0 + offset + half width
+    \pgfmathsetmacro{\ycenter}{\starty - #1 * (\cellheight + \cellyspacing) - 0.5 * \boxheight}
+    \pgfmathsetmacro{\xcenter}{\startx + #2 * (\cellwidth + \cellxspacing) + 0.5 * \boxwidth}
+
+    \node[draw, thick, rectangle, align=left] at (\xcenter in, \ycenter in)
+    {\begin{minipage}[t][\boxheight in][t]{\boxwidth in}
+    #5
+    \end{minipage}};
+}
+
+\newenvironment{layout}{
+    \begin{tikzpicture}
+}
+{
+    \end{tikzpicture}
+    \newpage
+}
