@@ -34,6 +34,7 @@ The following commands are defined or redefined by the class:
 `\title{issue title}` | Saves the `issue title` to a variable; at least one of `\series` and `\title` must be set
 `\author{author name}` | Saves the `author name` to a variable; unlike in `article`s, not setting this throws an error
 `\maketitle` | For printing out the title, author, etc. on the first page
+`\sceneheader{int.|ext.}{place}{time}` | Creates a header for the location and time for the page.
 `\page` | Starts a new, automatically numbered comic page
 `\panel[shot description]` | Starts a new, automatically numbered panel, with an optional shot description (wide, close-up, etc.)
 `\begin{lettering} ... \end{lettering}` | Environment for inputting lettering items
