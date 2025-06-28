@@ -148,3 +148,11 @@
     \end{tikzpicture}
     \newpage
 }
+
+\newcommand{\sceneheader}[3]{
+    \noindent
+    \begin{tikzpicture}
+        \node[draw=gray!70, fill=gray!70, align=left, inner sep=5pt] at (0, 0)
+        {\begin{minipage}{\textwidth}\MakeUppercase{\textbf{#1 #2 \boldmath{$-$} #3}}\end{minipage}};
+    \end{tikzpicture}
+}
