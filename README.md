@@ -40,3 +40,5 @@ The following commands are defined or redefined by the class:
 `\dialogue{character}[descriptor]{text}` | Lettering item used for spoken dialogue
 `\narration[descriptor]{text}` | Lettering item used for narration
 `\sfx{text}` | Lettering item used for sound effects
+`\begin{layout} ... \end{layout}` | Environment for drawing page layouts. See the command `\boxpanel`
+`\boxpanel{line}{column}{width}{height}` | Command for drawing box panels for layout
