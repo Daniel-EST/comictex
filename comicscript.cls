@@ -30,6 +30,8 @@
 \RequirePackage{fmtcount}
 \RequirePackage{xcolor}
 \RequirePackage{tikz}
+\RequirePackage{etoolbox}
+\RequirePackage{pgffor}
 
 % Commands and settings -------------------------------------------------------
 % Handle mutually exclusive options
@@ -116,6 +118,89 @@
 \NewDocumentCommand{\dialogue}{ m o m }{\letteringitem{#1}[#2]{#3}}
 \NewDocumentCommand{\narration}{ o m }{\letteringitem{NARRATION}[#1]{#2}}
 \NewDocumentCommand{\sfx}{ m }{\letteringitem{SFX}{#1}}
+
+% Storage for character names and descriptions
+\newcommand{\character@names}{}
+\newcommand{\character@descs}{}
+
+% Define new character: \newcharacter[name=Alice,desc=Explorer]{protagonist}
+\NewDocumentCommand{\newcharacter}{O{}m}{%
+  \begingroup
+    \def\character@name{}%
+    \def\character@desc{}%
+    % Parse the key-value options
+    \setkeys{character}{#1}%
+    % Save data into lists
+    \xappto{\character@names}{\def#2name{\character@name}}%
+    \xappto{\character@descs}{\def#2desc{\character@desc}}%
+    % Store identifier
+    \xappto{\character@list}{#2,}%
+    % Define macro that expands to the character name
+    \expandafter\newcommand\csname #2\endcsname{\character@name}%
+  \endgroup
+}
+
+% Define keys for character options
+\makeatletter
+\define@key{character}{name}{\def\character@name{#1}}
+\define@key{character}{desc}{\def\character@desc{#1}}
+\makeatother
+
+% Character list holder
+\newcommand{\character@list}{}
+
+% Command: \listcharacters
+\newcommand{\listcharacters}{%
+  \section*{Character List}%
+  % Re-evaluate definitions
+  \character@names
+  \character@descs
+  % Iterate over characters
+  \foreach \char in \character@list {%
+    \noindent\textbf{\csname \char name\endcsname}:~%
+    \csname \char desc\endcsname\par
+  }%
+}
+
+% Storage for location names and descriptions
+\newcommand{\location@names}{}
+\newcommand{\location@descs}{}
+\newcommand{\location@list}{}
+
+% Define new location: \newlocation[name=Labyrinth,desc=Underground maze]{maze}
+\NewDocumentCommand{\newlocation}{O{}m}{%
+  \begingroup
+    \def\location@name{}%
+    \def\location@desc{}%
+    % Parse the key-value options
+    \setkeys{location}{#1}%
+    % Save data into lists
+    \xappto{\location@names}{\def#2name{\location@name}}%
+    \xappto{\location@descs}{\def#2desc{\location@desc}}%
+    \xappto{\location@list}{#2,}%
+    % Define macro that expands to the location name
+    \expandafter\newcommand\csname #2\endcsname{\location@name}%
+  \endgroup
+}
+
+% Define keys for location options
+\makeatletter
+\define@key{location}{name}{\def\location@name{#1}}
+\define@key{location}{desc}{\def\location@desc{#1}}
+\makeatother
+
+% Command: \listlocations
+\newcommand{\listlocations}{%
+  \section*{Location List}%
+  % Re-evaluate definitions
+  \location@names
+  \location@descs
+  % Iterate over locations
+  \foreach \loc in \location@list {%
+    \noindent\textbf{\csname \loc name\endcsname}:~%
+    \csname \loc desc\endcsname\par
+  }%
+}
 
 % Cell size and spacing (in inches)
 \newcommand{\cellwidth}{3}
