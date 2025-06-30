@@ -30,8 +30,8 @@
 \RequirePackage{fmtcount}
 \RequirePackage{xcolor}
 \RequirePackage{tikz}
-\RequirePackage{etoolbox}
-\RequirePackage{pgffor}
+\RequirePackage{expl3}
+\RequirePackage{etoolbox} % for conditional checks
 
 % Commands and settings -------------------------------------------------------
 % Handle mutually exclusive options
@@ -119,48 +119,75 @@
 \NewDocumentCommand{\narration}{ o m }{\letteringitem{NARRATION}[#1]{#2}}
 \NewDocumentCommand{\sfx}{ m }{\letteringitem{SFX}{#1}}
 
-% Storage for character names and descriptions
-\newcommand{\character@names}{}
-\newcommand{\character@descs}{}
+\ExplSyntaxOn
+% === Characters ===
 
-% Define new character: \newcharacter[name=Alice,desc=Explorer]{protagonist}
-\NewDocumentCommand{\newcharacter}{O{}m}{%
-  \begingroup
-    \def\character@name{}%
-    \def\character@desc{}%
-    % Parse the key-value options
-    \setkeys{character}{#1}%
-    % Save data into lists
-    \xappto{\character@names}{\def#2name{\character@name}}%
-    \xappto{\character@descs}{\def#2desc{\character@desc}}%
-    % Store identifier
-    \xappto{\character@list}{#2,}%
-    % Define macro that expands to the character name
-    \expandafter\newcommand\csname #2\endcsname{\character@name}%
-  \endgroup
+% Store character data
+\seq_new:N \g_comic_characters_seq
+\prop_new:N \g_comic_character_data_prop
+
+% Define keys
+\keys_define:nn { comic/character }
+{
+  name .tl_set:N = \l_comic_character_name_tl,
+  desc .tl_set:N = \l_comic_character_desc_tl,
 }
 
-% Define keys for character options
-\makeatletter
-\define@key{character}{name}{\def\character@name{#1}}
-\define@key{character}{desc}{\def\character@desc{#1}}
-\makeatother
-
-% Character list holder
-\newcommand{\character@list}{}
-
-% Command: \listcharacters
-\newcommand{\listcharacters}{%
-  \section*{Character List}%
-  % Re-evaluate definitions
-  \character@names
-  \character@descs
-  % Iterate over characters
-  \foreach \char in \character@list {%
-    \noindent\textbf{\csname \char name\endcsname}:~%
-    \csname \char desc\endcsname\par
-  }%
+% Define \newcharacter[name=...,desc=...]{id}
+\NewDocumentCommand{\newcharacter}{O{}m}
+{
+  \keys_set:nn { comic/character } { #1 }
+  \seq_gput_right:Nn \g_comic_characters_seq { #2 }
+  \prop_gput:Nnx \g_comic_character_data_prop { #2/name } { \l_comic_character_name_tl }
+  \prop_gput:Nnx \g_comic_character_data_prop { #2/desc } { \l_comic_character_desc_tl }
+  \cs_new:cpn {#2} { \prop_item:Nn \g_comic_character_data_prop { #2/name } }
 }
+
+% Define \listcharacters
+\NewDocumentCommand{\listcharacters}{}{
+  \section*{Character List}
+  \seq_map_inline:Nn \g_comic_characters_seq
+  {
+    \noindent
+    \textbf{\prop_item:Nn \g_comic_character_data_prop { ##1/name }}:~
+    \prop_item:Nn \g_comic_character_data_prop { ##1/desc } \par
+  }
+}
+
+% === Locations ===
+
+% Store location data
+\seq_new:N \g_comic_locations_seq
+\prop_new:N \g_comic_location_data_prop
+
+% Define keys
+\keys_define:nn { comic/location }
+{
+  name .tl_set:N = \l_comic_location_name_tl,
+  desc .tl_set:N = \l_comic_location_desc_tl,
+}
+
+% Define \newlocation[name=...,desc=...]{id}
+\NewDocumentCommand{\newlocation}{O{}m}
+{
+  \keys_set:nn { comic/location } { #1 }
+  \seq_gput_right:Nn \g_comic_locations_seq { #2 }
+  \prop_gput:Nnx \g_comic_location_data_prop { #2/name } { \l_comic_location_name_tl }
+  \prop_gput:Nnx \g_comic_location_data_prop { #2/desc } { \l_comic_location_desc_tl }
+  \cs_new:cpn {#2} { \prop_item:Nn \g_comic_location_data_prop { #2/name } }
+}
+
+% Define \listlocations
+\NewDocumentCommand{\listlocations}{}{
+  \section*{Location List}
+  \seq_map_inline:Nn \g_comic_locations_seq
+  {
+    \noindent
+    \textbf{\prop_item:Nn \g_comic_location_data_prop { ##1/name }}:~
+    \prop_item:Nn \g_comic_location_data_prop { ##1/desc } \par
+  }
+}
+\ExplSyntaxOff
 
 % Storage for location names and descriptions
 \newcommand{\location@names}{}
