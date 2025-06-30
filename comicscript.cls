@@ -120,23 +120,19 @@
 \NewDocumentCommand{\sfx}{ m }{\letteringitem{SFX}{#1}}
 
 \ExplSyntaxOn
-
 % ============================
 % === Characters ============
 % ============================
 
-% Sequences and property list
 \seq_new:N \g_comic_characters_seq
 \prop_new:N \g_comic_character_data_prop
 
-% Key definitions
 \keys_define:nn { comic/character }
 {
   name .tl_set:N = \l_comic_character_name_tl,
   desc .tl_set:N = \l_comic_character_desc_tl,
 }
 
-% Define new character
 \NewDocumentCommand{\newcharacter}{O{}m}
 {
   \keys_set:nn { comic/character } { #1 }
@@ -146,9 +142,9 @@
   \cs_new:cpn {#2} { \MakeUppercase{\prop_item:Nn \g_comic_character_data_prop { #2/name }} }
 }
 
-% List characters
 \NewDocumentCommand{\listcharacters}{}{
-  \section*{Character List}\par\medskip
+  \par\bigskip
+  \section*{Character~List}\par\medskip
   \seq_map_inline:Nn \g_comic_characters_seq
   {
     \noindent
@@ -161,18 +157,15 @@
 % === Locations =============
 % ============================
 
-% Sequences and property list
 \seq_new:N \g_comic_locations_seq
 \prop_new:N \g_comic_location_data_prop
 
-% Key definitions
 \keys_define:nn { comic/location }
 {
   name .tl_set:N = \l_comic_location_name_tl,
   desc .tl_set:N = \l_comic_location_desc_tl,
 }
 
-% Define new location
 \NewDocumentCommand{\newlocation}{O{}m}
 {
   \keys_set:nn { comic/location } { #1 }
@@ -182,9 +175,9 @@
   \cs_new:cpn {#2} { \MakeUppercase{\prop_item:Nn \g_comic_location_data_prop { #2/name }} }
 }
 
-% List locations
 \NewDocumentCommand{\listlocations}{}{
-  \section*{Location List}\par\medskip
+  \par\bigskip
+  \section*{Location~List}\par\medskip
   \seq_map_inline:Nn \g_comic_locations_seq
   {
     \noindent
