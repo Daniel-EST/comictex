@@ -120,114 +120,79 @@
 \NewDocumentCommand{\sfx}{ m }{\letteringitem{SFX}{#1}}
 
 \ExplSyntaxOn
-% === Characters ===
 
-% Store character data
+% ============================
+% === Characters ============
+% ============================
+
+% Sequences and property list
 \seq_new:N \g_comic_characters_seq
 \prop_new:N \g_comic_character_data_prop
 
-% Define keys
+% Key definitions
 \keys_define:nn { comic/character }
 {
   name .tl_set:N = \l_comic_character_name_tl,
   desc .tl_set:N = \l_comic_character_desc_tl,
 }
 
-% Define \newcharacter[name=...,desc=...]{id}
+% Define new character
 \NewDocumentCommand{\newcharacter}{O{}m}
 {
   \keys_set:nn { comic/character } { #1 }
   \seq_gput_right:Nn \g_comic_characters_seq { #2 }
   \prop_gput:Nnx \g_comic_character_data_prop { #2/name } { \l_comic_character_name_tl }
   \prop_gput:Nnx \g_comic_character_data_prop { #2/desc } { \l_comic_character_desc_tl }
-  \cs_new:cpn {#2} { \prop_item:Nn \g_comic_character_data_prop { #2/name } }
+  \cs_new:cpn {#2} { \MakeUppercase{\prop_item:Nn \g_comic_character_data_prop { #2/name }} }
 }
 
-% Define \listcharacters
+% List characters
 \NewDocumentCommand{\listcharacters}{}{
-  \section*{Character List}
+  \section*{Character List}\par\medskip
   \seq_map_inline:Nn \g_comic_characters_seq
   {
     \noindent
-    \textbf{\prop_item:Nn \g_comic_character_data_prop { ##1/name }}:~
+    \textbf{\MakeUppercase{\prop_item:Nn \g_comic_character_data_prop { ##1/name }}}:~
     \prop_item:Nn \g_comic_character_data_prop { ##1/desc } \par
   }
 }
 
-% === Locations ===
+% ============================
+% === Locations =============
+% ============================
 
-% Store location data
+% Sequences and property list
 \seq_new:N \g_comic_locations_seq
 \prop_new:N \g_comic_location_data_prop
 
-% Define keys
+% Key definitions
 \keys_define:nn { comic/location }
 {
   name .tl_set:N = \l_comic_location_name_tl,
   desc .tl_set:N = \l_comic_location_desc_tl,
 }
 
-% Define \newlocation[name=...,desc=...]{id}
+% Define new location
 \NewDocumentCommand{\newlocation}{O{}m}
 {
   \keys_set:nn { comic/location } { #1 }
   \seq_gput_right:Nn \g_comic_locations_seq { #2 }
   \prop_gput:Nnx \g_comic_location_data_prop { #2/name } { \l_comic_location_name_tl }
   \prop_gput:Nnx \g_comic_location_data_prop { #2/desc } { \l_comic_location_desc_tl }
-  \cs_new:cpn {#2} { \prop_item:Nn \g_comic_location_data_prop { #2/name } }
+  \cs_new:cpn {#2} { \MakeUppercase{\prop_item:Nn \g_comic_location_data_prop { #2/name }} }
 }
 
-% Define \listlocations
+% List locations
 \NewDocumentCommand{\listlocations}{}{
-  \section*{Location List}
+  \section*{Location List}\par\medskip
   \seq_map_inline:Nn \g_comic_locations_seq
   {
     \noindent
-    \textbf{\prop_item:Nn \g_comic_location_data_prop { ##1/name }}:~
+    \textbf{\MakeUppercase{\prop_item:Nn \g_comic_location_data_prop { ##1/name }}}:~
     \prop_item:Nn \g_comic_location_data_prop { ##1/desc } \par
   }
 }
 \ExplSyntaxOff
-
-% Storage for location names and descriptions
-\newcommand{\location@names}{}
-\newcommand{\location@descs}{}
-\newcommand{\location@list}{}
-
-% Define new location: \newlocation[name=Labyrinth,desc=Underground maze]{maze}
-\NewDocumentCommand{\newlocation}{O{}m}{%
-  \begingroup
-    \def\location@name{}%
-    \def\location@desc{}%
-    % Parse the key-value options
-    \setkeys{location}{#1}%
-    % Save data into lists
-    \xappto{\location@names}{\def#2name{\location@name}}%
-    \xappto{\location@descs}{\def#2desc{\location@desc}}%
-    \xappto{\location@list}{#2,}%
-    % Define macro that expands to the location name
-    \expandafter\newcommand\csname #2\endcsname{\location@name}%
-  \endgroup
-}
-
-% Define keys for location options
-\makeatletter
-\define@key{location}{name}{\def\location@name{#1}}
-\define@key{location}{desc}{\def\location@desc{#1}}
-\makeatother
-
-% Command: \listlocations
-\newcommand{\listlocations}{%
-  \section*{Location List}%
-  % Re-evaluate definitions
-  \location@names
-  \location@descs
-  % Iterate over locations
-  \foreach \loc in \location@list {%
-    \noindent\textbf{\csname \loc name\endcsname}:~%
-    \csname \loc desc\endcsname\par
-  }%
-}
 
 % Cell size and spacing (in inches)
 \newcommand{\cellwidth}{3}
